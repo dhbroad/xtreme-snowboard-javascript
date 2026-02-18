@@ -219,10 +219,11 @@ body.is-fullscreen #titleImg {
   function scaleFullscreen() {
     const sw = window.innerWidth;
     const sh = window.innerHeight;
-    const scaleX = sw / BASE_W;
-    const scaleY = sh / BASE_H;
-    const scale = Math.min(scaleX, scaleY);
-    fsContainer.style.transform = 'scale(' + scale + ')';
+    // Scale to fill vertical space (topBar 26 + canvas 300 + bottomBar 24 = 350, plus 4px border)
+    const scale = sh / BASE_H;
+    // Only apply if it fits horizontally, otherwise constrain by width
+    const finalScale = (BASE_W * scale <= sw) ? scale : sw / BASE_W;
+    fsContainer.style.transform = 'scale(' + finalScale + ')';
     fsContainer.style.transformOrigin = 'center center';
   }
 
