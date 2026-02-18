@@ -1325,11 +1325,12 @@ class maingame {
 
   touchUpdate(touches, rect) {
     let hasLeft = false, hasRight = false, hasMiddle = false;
-    let thirdW = rect.width / 3;
+    let leftEnd = rect.width * 0.283;
+    let rightStart = rect.width * 0.717;
     for (let i = 0; i < touches.length; i++) {
       let x = touches[i].clientX - rect.left;
-      if (x < thirdW) hasLeft = true;
-      else if (x >= thirdW * 2) hasRight = true;
+      if (x < leftEnd) hasLeft = true;
+      else if (x >= rightStart) hasRight = true;
       else hasMiddle = true;
     }
     this.lFlag = hasLeft;
