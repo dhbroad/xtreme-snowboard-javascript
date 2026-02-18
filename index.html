@@ -2,19 +2,30 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Xtreme Snowboard</title>
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
-body {
+html, body {
   background: rgb(0,89,174);
+  overflow-x: hidden;
+  font-family: Arial, sans-serif;
+  color: #fff;
+  min-height: 100vh;
+}
+body {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   min-height: 100vh;
-  font-family: Arial, sans-serif;
-  color: #fff;
+}
+#appContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 480px;
+  transform-origin: top center;
 }
 #topBar {
   display: flex;
@@ -65,6 +76,18 @@ canvas {
   text-align: left;
   padding-left: 4px;
 }
+#fsBtn {
+  background: none;
+  border: 1px solid rgba(255,255,255,0.3);
+  color: #cde;
+  font-size: 11px;
+  padding: 1px 7px;
+  border-radius: 3px;
+  cursor: pointer;
+  margin-right: 4px;
+  white-space: nowrap;
+}
+#fsBtn:hover { background: rgba(255,255,255,0.12); color: #fff; }
 #controls {
   margin-top: 8px;
   font-size: 12px;
@@ -109,10 +132,36 @@ canvas {
   display: block;
   margin-bottom: 4px;
 }
+/* Fullscreen mode */
+#fsContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+#fsContainer:-webkit-full-screen,
+#fsContainer:fullscreen {
+  background: rgb(0,89,174);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+body.is-fullscreen #appContainer > *:not(#fsContainer) {
+  display: none;
+}
+body.is-fullscreen #difficultyBar,
+body.is-fullscreen #controls,
+body.is-fullscreen #titleImg {
+  display: none;
+}
 </style>
 </head>
 <body>
+<div id="appContainer">
 <img id="titleImg" src="cim.gif" alt="Xtreme Snowboard">
+<div id="fsContainer">
 <div id="topBar">
   <div id="scoreLabel"></div>
   <div id="msgLabel"></div>
@@ -123,6 +172,8 @@ canvas {
 <div id="bottomBar">
   <div id="levelLabel"></div>
   <div id="hiScoreLabel"></div>
+  <button id="fsBtn" title="Fullscreen">&#x26F6;</button>
+</div>
 </div>
 <div id="difficultyBar">
   <span id="diffLabel">Difficulty:</span>
@@ -136,6 +187,7 @@ canvas {
 <div id="controls">
   Left/Right Arrow: Steer &nbsp;|&nbsp; Space: Jump &nbsp;|&nbsp; Click to Start
 </div>
+</div>
 
 <script src="src/XVector.js"></script>
 <script src="src/XMatrix.js"></script>
@@ -146,5 +198,93 @@ canvas {
 <script src="src/freeobj.js"></script>
 <script src="src/maingame.js"></script>
 <script src="src/game3d.js"></script>
+<script>
+(function() {
+  const BASE_W = 484; // 480 + 4px border
+  const BASE_H = 350; // 26 + 300 + 24
+  const appContainer = document.getElementById('appContainer');
+  const fsContainer = document.getElementById('fsContainer');
+  const fsBtn = document.getElementById('fsBtn');
+
+  function scaleApp() {
+    if (document.fullscreenElement || document.webkitFullscreenElement) return;
+    const vw = window.innerWidth;
+    const scale = vw < BASE_W ? vw / BASE_W : 1;
+    appContainer.style.transform = 'scale(' + scale + ')';
+    // Adjust body height so page doesn't have extra scroll space
+    const appH = appContainer.getBoundingClientRect().height;
+    document.body.style.minHeight = Math.max(appH + 20, window.innerHeight) + 'px';
+  }
+
+  function scaleFullscreen() {
+    const sw = window.innerWidth;
+    const sh = window.innerHeight;
+    const scaleX = sw / BASE_W;
+    const scaleY = sh / BASE_H;
+    const scale = Math.min(scaleX, scaleY);
+    fsContainer.style.transform = 'scale(' + scale + ')';
+    fsContainer.style.transformOrigin = 'center center';
+  }
+
+  function enterFullscreen() {
+    const el = fsContainer;
+    const rfs = el.requestFullscreen || el.webkitRequestFullscreen;
+    if (rfs) {
+      rfs.call(el).then(function() {
+        if (screen.orientation && screen.orientation.lock) {
+          screen.orientation.lock('landscape').catch(function(){});
+        }
+      }).catch(function(){});
+    }
+  }
+
+  function exitFullscreen() {
+    const eFs = document.exitFullscreen || document.webkitExitFullscreen;
+    if (eFs) eFs.call(document).catch(function(){});
+  }
+
+  function onFsChange() {
+    const isFs = !!(document.fullscreenElement || document.webkitFullscreenElement);
+    document.body.classList.toggle('is-fullscreen', isFs);
+    if (isFs) {
+      fsBtn.innerHTML = '&#x2716;';
+      fsBtn.title = 'Exit Fullscreen';
+      scaleFullscreen();
+    } else {
+      fsBtn.innerHTML = '&#x26F6;';
+      fsBtn.title = 'Fullscreen';
+      fsContainer.style.transform = '';
+      if (screen.orientation && screen.orientation.unlock) {
+        screen.orientation.unlock();
+      }
+      scaleApp();
+    }
+  }
+
+  fsBtn.addEventListener('click', function(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    if (document.fullscreenElement || document.webkitFullscreenElement) {
+      exitFullscreen();
+    } else {
+      enterFullscreen();
+    }
+  });
+
+  document.addEventListener('fullscreenchange', onFsChange);
+  document.addEventListener('webkitfullscreenchange', onFsChange);
+  window.addEventListener('resize', function() {
+    if (document.fullscreenElement || document.webkitFullscreenElement) {
+      scaleFullscreen();
+    } else {
+      scaleApp();
+    }
+  });
+
+  // Initial scale
+  scaleApp();
+  window.addEventListener('load', scaleApp);
+})();
+</script>
 </body>
 </html>
