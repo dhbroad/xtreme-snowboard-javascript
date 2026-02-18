@@ -103,6 +103,34 @@ class game3d {
       if (this.game) this.game.mouseUp(e);
     });
     canvas.addEventListener("contextmenu", (e) => e.preventDefault());
+    // Touch controls: left third=steer left, middle third=jump, right third=steer right
+    canvas.addEventListener("touchstart", (e) => {
+      e.preventDefault();
+      if (this.game) {
+        let rect = canvas.getBoundingClientRect();
+        this.game.touchUpdate(e.touches, rect);
+      }
+    }, { passive: false });
+    canvas.addEventListener("touchmove", (e) => {
+      e.preventDefault();
+      if (this.game) {
+        let rect = canvas.getBoundingClientRect();
+        this.game.touchUpdate(e.touches, rect);
+      }
+    }, { passive: false });
+    canvas.addEventListener("touchend", (e) => {
+      e.preventDefault();
+      if (this.game) {
+        let rect = canvas.getBoundingClientRect();
+        this.game.touchUpdate(e.touches, rect);
+      }
+    }, { passive: false });
+    canvas.addEventListener("touchcancel", (e) => {
+      e.preventDefault();
+      if (this.game) {
+        this.game.touchUpdate([], canvas.getBoundingClientRect());
+      }
+    }, { passive: false });
   }
 }
 

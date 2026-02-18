@@ -125,6 +125,7 @@ class maingame {
     this.pl_wind = 0;
     this.pl_landing = 0;
     this.pl_bonus = 0;
+    this._touchJumpHeld = false;
     // Image references (will be HTML Image objects)
     this.myImg0 = null;
     this.snowImg0 = null;
@@ -1320,6 +1321,40 @@ class maingame {
   mouseMove(x, y) {
     this.mouseX = x;
     this.mouseY = y;
+  }
+
+  touchUpdate(touches, rect) {
+    let hasLeft = false, hasRight = false, hasMiddle = false;
+    let thirdW = rect.width / 3;
+    for (let i = 0; i < touches.length; i++) {
+      let x = touches[i].clientX - rect.left;
+      if (x < thirdW) hasLeft = true;
+      else if (x >= thirdW * 2) hasRight = true;
+      else hasMiddle = true;
+    }
+    this.lFlag = hasLeft;
+    this.rFlag = hasRight;
+    // Jump on new middle touch (like Space keyDown)
+    if (hasMiddle && !this._touchJumpHeld) {
+      this._touchJumpHeld = true;
+      if (this.damaged === 0 && this.startFlag && this.mainCamera.getJumpPhase() !== 10) {
+        this.jumpType = Math.abs(this.vx) < this.maxVX / 3.0 ? 3 : (this.vx < 0 ? 4 : 5);
+        let vy = this.mySpeed < this.highSpeed ? -(this.mySpeedMax + 1.0 - this.mySpeed) : -(this.mySpeedMax + 1.0 - this.highSpeed);
+        this.mainCamera.Jump(vy, this.gravity, true, -1, this.jumpType);
+        this.jumpType = this.mainCamera.jumpType;
+        if (this.mainCamera.isSuperJump() && this.pl_bonus === 0) {
+          this.playAudio(this.bonus_au);
+          this.pl_bonus = 1;
+        }
+      }
+    }
+    if (!hasMiddle) this._touchJumpHeld = false;
+    // Start game from demo on any touch
+    if (touches.length > 0 && !this.startFlag && this.isDemo) {
+      this.isDemo = false;
+      this.isContinue = true;
+      this.startGame(true);
+    }
   }
 
   mouseDown(e) {
