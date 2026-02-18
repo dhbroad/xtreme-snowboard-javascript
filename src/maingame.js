@@ -1325,8 +1325,8 @@ class maingame {
 
   touchUpdate(touches, rect) {
     let hasLeft = false, hasRight = false, hasMiddle = false;
-    let leftEnd = rect.width * 0.283;
-    let rightStart = rect.width * 0.717;
+    let leftEnd = rect.width * 0.2;
+    let rightStart = rect.width * 0.8;
     for (let i = 0; i < touches.length; i++) {
       let x = touches[i].clientX - rect.left;
       if (x < leftEnd) hasLeft = true;
