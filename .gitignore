@@ -1,0 +1,14 @@
+# Java class files
+*.class
+
+# Java bytecode analysis
+*_bytecode.txt
+
+# Installers
+*.msi
+
+# Decompiled Java source
+decompiled/
+
+# Java tools
+cfr.jar

@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Xtreme Snowboard</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  background: rgb(0,89,174);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  font-family: Arial, sans-serif;
+  color: #fff;
+}
+#topBar {
+  display: flex;
+  width: 480px;
+  height: 26px;
+  background: rgb(0,89,174);
+  align-items: center;
+}
+#scoreLabel {
+  width: 160px;
+  font-size: 15px;
+  text-align: left;
+  padding-left: 4px;
+}
+#msgLabel {
+  flex: 1;
+  font-size: 15px;
+  text-align: right;
+  padding-right: 4px;
+}
+#gameWrapper {
+  position: relative;
+  border: 2px solid #003366;
+  overflow: hidden;
+}
+canvas {
+  display: block;
+  background: rgb(175,238,238);
+}
+#bottomBar {
+  display: flex;
+  width: 480px;
+  height: 24px;
+  background: rgb(0,89,174);
+  align-items: center;
+}
+#levelLabel {
+  width: 120px;
+  font-size: 13px;
+  font-weight: bold;
+  text-align: left;
+  padding-left: 4px;
+}
+#hiScoreLabel {
+  flex: 1;
+  font-size: 13px;
+  color: cyan;
+  text-align: left;
+  padding-left: 4px;
+}
+#controls {
+  margin-top: 8px;
+  font-size: 12px;
+  color: #aac;
+  text-align: center;
+}
+#difficultyBar {
+  display: flex;
+  width: 480px;
+  height: 28px;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 4px;
+}
+#difficultyBar label {
+  font-size: 13px;
+  color: #cde;
+  cursor: pointer;
+  padding: 2px 10px;
+  border-radius: 3px;
+  border: 1px solid transparent;
+  transition: all 0.15s;
+}
+#difficultyBar input[type="radio"] { display: none; }
+#difficultyBar input[type="radio"]:checked + label {
+  background: rgba(255,255,255,0.15);
+  border-color: rgba(255,255,255,0.3);
+  color: #fff;
+  font-weight: bold;
+}
+#difficultyBar label:hover {
+  background: rgba(255,255,255,0.08);
+}
+#diffLabel {
+  font-size: 12px;
+  color: #8ab;
+  margin-right: 4px;
+}
+#titleImg {
+  width: 480px;
+  display: block;
+  margin-bottom: 4px;
+}
+</style>
+</head>
+<body>
+<img id="titleImg" src="cim.gif" alt="Xtreme Snowboard">
+<div id="topBar">
+  <div id="scoreLabel"></div>
+  <div id="msgLabel"></div>
+</div>
+<div id="gameWrapper">
+  <canvas id="gameCanvas" width="480" height="300"></canvas>
+</div>
+<div id="bottomBar">
+  <div id="levelLabel"></div>
+  <div id="hiScoreLabel"></div>
+</div>
+<div id="difficultyBar">
+  <span id="diffLabel">Difficulty:</span>
+  <input type="radio" name="difficulty" id="diffNormal" value="50" checked>
+  <label for="diffNormal">Normal</label>
+  <input type="radio" name="difficulty" id="diffHard" value="28">
+  <label for="diffHard">Hard</label>
+  <input type="radio" name="difficulty" id="diffXtreme" value="20">
+  <label for="diffXtreme">Xtreme</label>
+</div>
+<div id="controls">
+  Left/Right Arrow: Steer &nbsp;|&nbsp; Space: Jump &nbsp;|&nbsp; Click to Start
+</div>
+
+<script src="src/XVector.js"></script>
+<script src="src/XMatrix.js"></script>
+<script src="src/RenderedXY.js"></script>
+<script src="src/XCamera.js"></script>
+<script src="src/obstacle.js"></script>
+<script src="src/BackgroundObject.js"></script>
+<script src="src/freeobj.js"></script>
+<script src="src/maingame.js"></script>
+<script src="src/game3d.js"></script>
+</body>
+</html>
