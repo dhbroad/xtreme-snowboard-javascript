@@ -145,8 +145,15 @@ canvas {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  width: 100%;
-  height: 100%;
+  width: 100vw !important;
+  height: 100vh !important;
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+}
+#fsContainer:-webkit-full-screen #fsInner,
+#fsContainer:fullscreen #fsInner {
+  transform-origin: center center;
 }
 body.is-fullscreen #appContainer > *:not(#fsContainer) {
   display: none;
@@ -162,6 +169,7 @@ body.is-fullscreen #titleImg {
 <div id="appContainer">
 <img id="titleImg" src="cim.gif" alt="Xtreme Snowboard">
 <div id="fsContainer">
+<div id="fsInner">
 <div id="topBar">
   <div id="scoreLabel"></div>
   <div id="msgLabel"></div>
@@ -173,6 +181,7 @@ body.is-fullscreen #titleImg {
   <div id="levelLabel"></div>
   <div id="hiScoreLabel"></div>
   <button id="fsBtn" title="Fullscreen">&#x26F6;</button>
+</div>
 </div>
 </div>
 <div id="difficultyBar">
@@ -204,6 +213,7 @@ body.is-fullscreen #titleImg {
   const BASE_H = 350; // 26 + 300 + 24
   const appContainer = document.getElementById('appContainer');
   const fsContainer = document.getElementById('fsContainer');
+  const fsInner = document.getElementById('fsInner');
   const fsBtn = document.getElementById('fsBtn');
 
   function scaleApp() {
@@ -223,8 +233,8 @@ body.is-fullscreen #titleImg {
     const scale = sh / BASE_H;
     // Only apply if it fits horizontally, otherwise constrain by width
     const finalScale = (BASE_W * scale <= sw) ? scale : sw / BASE_W;
-    fsContainer.style.transform = 'scale(' + finalScale + ')';
-    fsContainer.style.transformOrigin = 'center center';
+    fsInner.style.transform = 'scale(' + finalScale + ')';
+    fsInner.style.transformOrigin = 'center center';
   }
 
   function enterFullscreen() {
@@ -254,7 +264,7 @@ body.is-fullscreen #titleImg {
     } else {
       fsBtn.innerHTML = '&#x26F6;';
       fsBtn.title = 'Fullscreen';
-      fsContainer.style.transform = '';
+      fsInner.style.transform = '';
       if (screen.orientation && screen.orientation.unlock) {
         screen.orientation.unlock();
       }
